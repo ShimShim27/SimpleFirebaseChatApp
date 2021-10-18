@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.*
 import com.simple.firebase.chat.app.R
 import com.simple.firebase.chat.app.dagger.DaggerViewModelComponent
 import com.simple.firebase.chat.app.dagger.ViewModelModule

@@ -17,10 +17,10 @@ class ConversationRecyclerAdapter(private val viewModel: MainActivityViewModel) 
     companion object {
         val callback = object : DiffUtil.ItemCallback<Conversation>() {
             override fun areItemsTheSame(oldItem: Conversation, newItem: Conversation): Boolean =
-                oldItem.otherUserId == newItem.otherUserId
+                oldItem.partnerUserId == newItem.partnerUserId
 
             override fun areContentsTheSame(oldItem: Conversation, newItem: Conversation): Boolean =
-                oldItem.otherUserId == newItem.otherUserId
+                oldItem.partnerUserId == newItem.partnerUserId
 
         }
     }
@@ -29,7 +29,7 @@ class ConversationRecyclerAdapter(private val viewModel: MainActivityViewModel) 
         val otherUserId: TextView = v.findViewById(R.id.otherUserId)
 
         init {
-            v.setOnClickListener { viewModel.gotoMessages(getItem(adapterPosition).otherUserId) }
+            v.setOnClickListener { viewModel.gotoMessages(getItem(adapterPosition).partnerUserId) }
         }
     }
 
@@ -42,6 +42,6 @@ class ConversationRecyclerAdapter(private val viewModel: MainActivityViewModel) 
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         val conversation = getItem(position)
-        holder.otherUserId.text = conversation.otherUserId
+        holder.otherUserId.text = conversation.partnerUserId
     }
 }

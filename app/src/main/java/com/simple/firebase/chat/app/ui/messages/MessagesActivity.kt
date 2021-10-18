@@ -2,7 +2,7 @@ package com.simple.firebase.chat.app.ui.messages
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Message
+import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.simple.firebase.chat.app.R
@@ -10,6 +10,7 @@ import com.simple.firebase.chat.app.util.MainUtil
 
 class MessagesActivity : AppCompatActivity() {
     private lateinit var messagesRecyclerAdapter: MessagesRecyclerAdapter
+    private lateinit var messageInputText: TextView
     private lateinit var viewModel: MessagesActivityViewModel
     private lateinit var messagesRecyclerView: RecyclerView
 
@@ -17,20 +18,21 @@ class MessagesActivity : AppCompatActivity() {
         const val EXTRA_OTHER_USER_ID = "other user id"
     }
 
-    private var otherUserId = ""
+    private var targetUserId = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_messages)
 
-        otherUserId = intent.extras!!.getString(EXTRA_OTHER_USER_ID)!!
+        targetUserId = intent.extras!!.getString(EXTRA_OTHER_USER_ID)!!
 
+        messageInputText = findViewById(R.id.messageInputText)
         messagesRecyclerView = findViewById(R.id.messagesRecyclerView)
         initViewModel()
 
-        messagesRecyclerAdapter = MessagesRecyclerAdapter()
+        messagesRecyclerAdapter = MessagesRecyclerAdapter(viewModel)
         messagesRecyclerView.adapter = messagesRecyclerAdapter
 
-        viewModel.getMessagesIfNotYet(otherUserId)
+        viewModel.getMessagesIfNotYet(targetUserId)
     }
 
     private fun initViewModel() {
@@ -38,6 +40,16 @@ class MessagesActivity : AppCompatActivity() {
         viewModel.messagesLiveData.observe(this, {
             messagesRecyclerAdapter.submitList(ArrayList(it))
         })
+
+    }
+
+    fun onClickSend(v: View) {
+        messageInputText.text.toString().apply {
+            if (this.isNotEmpty()) {
+                viewModel.sendMessage(this, targetUserId)
+                messageInputText.text = ""
+            }
+        }
 
     }
 }

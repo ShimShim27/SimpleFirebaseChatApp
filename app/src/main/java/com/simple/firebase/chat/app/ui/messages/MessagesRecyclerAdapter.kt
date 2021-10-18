@@ -1,5 +1,6 @@
 package com.simple.firebase.chat.app.ui.messages
 
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.simple.firebase.chat.app.R
 import com.simple.firebase.chat.app.model.Message
 
-class MessagesRecyclerAdapter :
+class MessagesRecyclerAdapter(private val viewModel: MessagesActivityViewModel) :
     ListAdapter<Message, MessagesRecyclerAdapter.CustomViewHolder>(callback) {
 
     companion object {
@@ -21,9 +22,10 @@ class MessagesRecyclerAdapter :
 
             override fun areContentsTheSame(oldItem: Message, newItem: Message): Boolean =
                 oldItem.id == newItem.id &&
-                        oldItem.received == newItem.received &&
-                        oldItem.otherUserId == newItem.otherUserId &&
-                        oldItem.message == newItem.message
+                        oldItem.message == newItem.message &&
+                        oldItem.sender == newItem.sender &&
+                        oldItem.receiver == newItem.receiver &&
+                        oldItem.date == newItem.date
 
         }
     }
@@ -44,7 +46,7 @@ class MessagesRecyclerAdapter :
         val message = getItem(position)
         holder.messageView.apply {
             text = message.message
-            gravity = if (message.received) Gravity.END else Gravity.START
+            gravity = if (message.sender == viewModel.getUserId()) Gravity.END else Gravity.START
         }
 
     }
