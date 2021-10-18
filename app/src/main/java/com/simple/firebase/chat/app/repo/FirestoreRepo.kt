@@ -87,7 +87,7 @@ class FirestoreRepo @Inject constructor() {
         firestore.collection(messagesColumn.name).whereIn(
             messagesColumn.senderReceiver,
             listOf("$userId:$otherUserId", "$otherUserId:$userId")
-        ).orderBy(messagesColumn.date, Query.Direction.DESCENDING).addSnapshotListener(listener)
+        ).orderBy(messagesColumn.date, Query.Direction.ASCENDING).addSnapshotListener(listener)
 
         return listener
     }

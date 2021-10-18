@@ -20,8 +20,7 @@ class MessagesActivityViewModel(private val firestoreRepo: FirestoreRepo) : View
             }
 
             val onFailure = { e: Exception ->
-                Log.e("e",e.toString())
-                Unit
+
             }
             firestoreRepo.getMessages(otherUserId, onSuccess, onFailure)
         }

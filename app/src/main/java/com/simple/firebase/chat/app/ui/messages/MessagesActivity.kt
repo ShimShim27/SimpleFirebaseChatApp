@@ -39,13 +39,17 @@ class MessagesActivity : AppCompatActivity() {
         viewModel = MainUtil.getViewModuleComponent(this).createMessagesActivityViewModel()
         viewModel.messagesLiveData.observe(this, {
             messagesRecyclerAdapter.submitList(ArrayList(it))
+            messagesRecyclerView.post {
+                messagesRecyclerView.scrollToPosition(it.size-1)
+            }
+
         })
 
     }
 
     fun onClickSend(v: View) {
         messageInputText.text.toString().apply {
-            if (this.isNotEmpty()) {
+            if (this.trim().isNotEmpty()) {
                 viewModel.sendMessage(this, targetUserId)
                 messageInputText.text = ""
             }
