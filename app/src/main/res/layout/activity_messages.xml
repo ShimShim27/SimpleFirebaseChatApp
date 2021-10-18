@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.MainActivity">
+    tools:context=".ui.messages.MessagesActivity">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/conversationsRecyclerBox"
+        android:id="@+id/messagesRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/conversation_recycler_box" />
-
+        tools:listitem="@layout/messages_recycler_box" />
 
 </LinearLayout>
