@@ -1,13 +1,15 @@
-package com.simple.firebase.chat.app.repo
+package com.simple.firebase.chat.app.datasource.repo
 
 import android.util.Log
 import com.google.firebase.firestore.*
+import com.google.firebase.firestore.EventListener
+import com.simple.firebase.chat.app.config.Config
 import com.simple.firebase.chat.app.model.Conversation
 import com.simple.firebase.chat.app.model.Message
 import com.simple.firebase.chat.app.structure.FirestoreStructure
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import java.lang.Exception
+import java.util.*
 import javax.inject.Inject
 
 class FirestoreRepo @Inject constructor() {
@@ -17,12 +19,12 @@ class FirestoreRepo @Inject constructor() {
     val userId = "UserId1"
 
 
-    fun getConversations(
+    fun getConversationsViaSnapshot(
         limit: Long,
         fromSnapshot: DocumentSnapshot?,
         onSuccess: ((lastDocumentSnapshot: DocumentSnapshot?, messages: List<Conversation>) -> Unit)?,
         onFailure: ((e: Exception) -> Unit)?
-    ) {
+    ): ListenerRegistration {
 
 
         val listener = object : EventListener<QuerySnapshot> {
@@ -55,19 +57,17 @@ class FirestoreRepo @Inject constructor() {
             .whereEqualTo(conversationsColumn.owner, userId)
             .limit(limit)
         query = if (fromSnapshot == null) query else query.startAfter(fromSnapshot)
-        query.addSnapshotListener(listener)
-
-
+        return query.addSnapshotListener(listener)
     }
 
 
-    fun getMessages(
+    fun getMessagesViaSnapshot(
         limit: Long,
-        fromSnapshot: DocumentSnapshot?,
+        upToSnapshot: DocumentSnapshot?,
         otherUserId: String,
-        onSuccess: ((messages: List<Message>) -> Unit)?,
+        onSuccess: ((firstDocumentSnapshot: DocumentSnapshot?, messages: List<Message>) -> Unit)?,
         onFailure: ((e: Exception) -> Unit)?
-    ): EventListener<QuerySnapshot> {
+    ): ListenerRegistration {
 
         val listener = object : EventListener<QuerySnapshot> {
             override fun onEvent(value: QuerySnapshot?, error: FirebaseFirestoreException?) {
@@ -76,7 +76,9 @@ class FirestoreRepo @Inject constructor() {
                     return
                 }
 
+                var firstDocumentSnapshot: DocumentSnapshot? = null
                 val messages = mutableListOf<Message>()
+
                 value?.documents?.forEach { doc ->
                     try {
                         val senderReceiver = doc.get(messagesColumn.senderReceiver) as List<String>
@@ -90,11 +92,13 @@ class FirestoreRepo @Inject constructor() {
                                 doc.getDate(messagesColumn.date)!!
                             )
                         )
+                        if (firstDocumentSnapshot == null) firstDocumentSnapshot =
+                            doc
                     } catch (e: Exception) {
 
                     }
                 }
-                onSuccess?.invoke(messages)
+                onSuccess?.invoke(firstDocumentSnapshot, messages)
 
             }
 
@@ -103,11 +107,10 @@ class FirestoreRepo @Inject constructor() {
         var query = firestore.collection(messagesColumn.name)
             .whereIn(messagesColumn.senderReceiver, listOf(listOf(userId, otherUserId)))
             .orderBy(messagesColumn.date, Query.Direction.ASCENDING)
-            .limit(limit)
-        query = if (fromSnapshot == null) query else query.startAfter(fromSnapshot)
-        query.addSnapshotListener(listener)
+            .limitToLast(limit)
+        query = if (upToSnapshot == null) query else query.endBefore(upToSnapshot)
+        return query.addSnapshotListener(listener)
 
-        return listener
     }
 
 
@@ -120,8 +123,12 @@ class FirestoreRepo @Inject constructor() {
 
 
         try {
+            /**
+             * Date to be fixed by using server timestamp
+             * later
+             */
             val messageData = mapOf(
-                messagesColumn.date to FieldValue.serverTimestamp(),
+                messagesColumn.date to Date(),
                 messagesColumn.message to message,
                 messagesColumn.senderReceiver to listOf(userId, targetId)
             )
@@ -140,9 +147,13 @@ class FirestoreRepo @Inject constructor() {
             val otherUserConversationSnapshot = conversationQuery(targetId).await()
 
             val newConversationData = { whichId: String ->
+                /**
+                 * Date to be fixed by using server timestamp
+                 * later
+                 */
                 mapOf(
                     conversationsColumn.owner to whichId,
-                    conversationsColumn.date to FieldValue.serverTimestamp(),
+                    conversationsColumn.date to Date(),
                     conversationsColumn.contacts to listOf(userId, targetId)
                 )
             }

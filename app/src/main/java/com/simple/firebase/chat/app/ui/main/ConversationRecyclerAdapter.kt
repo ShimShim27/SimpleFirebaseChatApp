@@ -4,14 +4,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.PagerAdapter
 import com.simple.firebase.chat.app.R
 import com.simple.firebase.chat.app.model.Conversation
 
 class ConversationRecyclerAdapter(private val viewModel: MainActivityViewModel) :
-    ListAdapter<Conversation, ConversationRecyclerAdapter.CustomViewHolder>(callback) {
+    PagingDataAdapter<Conversation, ConversationRecyclerAdapter.CustomViewHolder>(callback) {
 
 
     companion object {
@@ -29,7 +31,7 @@ class ConversationRecyclerAdapter(private val viewModel: MainActivityViewModel) 
         val otherUserId: TextView = v.findViewById(R.id.otherUserId)
 
         init {
-            v.setOnClickListener { viewModel.gotoMessages(getItem(adapterPosition).partnerUserId) }
+            v.setOnClickListener { viewModel.gotoMessages(getItem(bindingAdapterPosition)!!.partnerUserId) }
         }
     }
 
@@ -42,6 +44,6 @@ class ConversationRecyclerAdapter(private val viewModel: MainActivityViewModel) 
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         val conversation = getItem(position)
-        holder.otherUserId.text = conversation.partnerUserId
+        holder.otherUserId.text = conversation!!.partnerUserId
     }
 }

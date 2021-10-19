@@ -18,30 +18,33 @@ class MessagesActivity : AppCompatActivity() {
         const val EXTRA_OTHER_USER_ID = "other user id"
     }
 
-    private var targetUserId = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_messages)
 
-        targetUserId = intent.extras!!.getString(EXTRA_OTHER_USER_ID)!!
+
 
         messageInputText = findViewById(R.id.messageInputText)
         messagesRecyclerView = findViewById(R.id.messagesRecyclerView)
         initViewModel()
 
+        viewModel.otherUserId = intent.extras!!.getString(EXTRA_OTHER_USER_ID)!!
+
         messagesRecyclerAdapter = MessagesRecyclerAdapter(viewModel)
         messagesRecyclerView.adapter = messagesRecyclerAdapter
 
-        viewModel.getMessagesIfNotYet(targetUserId)
+        viewModel.setMessagesUpdateListener()
     }
+
 
     private fun initViewModel() {
         viewModel = MainUtil.getViewModuleComponent(this).createMessagesActivityViewModel()
         viewModel.messagesLiveData.observe(this, {
-            messagesRecyclerAdapter.submitList(ArrayList(it))
-            messagesRecyclerView.post {
-                messagesRecyclerView.scrollToPosition(it.size-1)
-            }
+            messagesRecyclerAdapter.submitData(lifecycle, it)
+            /* messagesRecyclerView.post {
+                 messagesRecyclerView.scrollToPosition(it.size - 1)
+             }*/
 
         })
 
@@ -50,7 +53,7 @@ class MessagesActivity : AppCompatActivity() {
     fun onClickSend(v: View) {
         messageInputText.text.toString().apply {
             if (this.trim().isNotEmpty()) {
-                viewModel.sendMessage(this, targetUserId)
+                viewModel.sendMessage(this)
                 messageInputText.text = ""
             }
         }

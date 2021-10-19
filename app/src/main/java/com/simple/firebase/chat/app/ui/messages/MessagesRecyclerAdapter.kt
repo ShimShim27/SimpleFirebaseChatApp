@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +14,7 @@ import com.simple.firebase.chat.app.R
 import com.simple.firebase.chat.app.model.Message
 
 class MessagesRecyclerAdapter(private val viewModel: MessagesActivityViewModel) :
-    ListAdapter<Message, MessagesRecyclerAdapter.CustomViewHolder>(callback) {
+    PagingDataAdapter<Message, MessagesRecyclerAdapter.CustomViewHolder>(callback) {
 
     companion object {
         val callback = object : DiffUtil.ItemCallback<Message>() {
@@ -43,7 +44,7 @@ class MessagesRecyclerAdapter(private val viewModel: MessagesActivityViewModel) 
     }
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        val message = getItem(position)
+        val message = getItem(position)!!
         holder.messageView.apply {
             text = message.message
             gravity = if (message.sender == viewModel.getUserId()) Gravity.END else Gravity.START
