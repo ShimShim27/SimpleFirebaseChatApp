@@ -5,6 +5,7 @@ import com.google.firebase.firestore.*
 import com.simple.firebase.chat.app.model.Conversation
 import com.simple.firebase.chat.app.model.Message
 import com.simple.firebase.chat.app.structure.FirestoreStructure
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import java.lang.Exception
 import javax.inject.Inject
@@ -17,9 +18,12 @@ class FirestoreRepo @Inject constructor() {
 
 
     fun getConversations(
-        onSuccess: ((messages: List<Conversation>) -> Unit)?,
+        limit: Long,
+        fromSnapshot: DocumentSnapshot?,
+        onSuccess: ((lastDocumentSnapshot: DocumentSnapshot?, messages: List<Conversation>) -> Unit)?,
         onFailure: ((e: Exception) -> Unit)?
-    ): EventListener<QuerySnapshot> {
+    ) {
+
 
         val listener = object : EventListener<QuerySnapshot> {
             override fun onEvent(value: QuerySnapshot?, error: FirebaseFirestoreException?) {
@@ -28,26 +32,38 @@ class FirestoreRepo @Inject constructor() {
                     return
                 }
 
+                var lastDocumentSnapshot: DocumentSnapshot? = null
                 val conversations = mutableListOf<Conversation>()
+
                 value?.documents?.forEach { doc ->
-                    conversations.add(Conversation(doc.getString(conversationsColumn.partnerUserId)!!))
+                    try {
+                        val contacts = doc.get(conversationsColumn.contacts) as List<String>
+                        conversations.add(Conversation(if (contacts[0] == userId) contacts[1] else contacts[0]))
+                        lastDocumentSnapshot = doc
+                    } catch (e: Exception) {
+
+                    }
                 }
-                onSuccess?.invoke(conversations)
+                onSuccess?.invoke(lastDocumentSnapshot, conversations)
 
             }
 
         }
-        firestore.collection(conversationsColumn.name)
-            .whereEqualTo(conversationsColumn.owner, userId)
-            .addSnapshotListener(listener)
 
-        return listener
+        var query = firestore.collection(conversationsColumn.name)
+            .orderBy(conversationsColumn.date, Query.Direction.DESCENDING)
+            .whereEqualTo(conversationsColumn.owner, userId)
+            .limit(limit)
+        query = if (fromSnapshot == null) query else query.startAfter(fromSnapshot)
+        query.addSnapshotListener(listener)
 
 
     }
 
 
     fun getMessages(
+        limit: Long,
+        fromSnapshot: DocumentSnapshot?,
         otherUserId: String,
         onSuccess: ((messages: List<Message>) -> Unit)?,
         onFailure: ((e: Exception) -> Unit)?
@@ -63,8 +79,7 @@ class FirestoreRepo @Inject constructor() {
                 val messages = mutableListOf<Message>()
                 value?.documents?.forEach { doc ->
                     try {
-                        val senderReceiver =
-                            doc.getString(messagesColumn.senderReceiver)!!.split(":")
+                        val senderReceiver = doc.get(messagesColumn.senderReceiver) as List<String>
 
                         messages.add(
                             Message(
@@ -76,6 +91,7 @@ class FirestoreRepo @Inject constructor() {
                             )
                         )
                     } catch (e: Exception) {
+
                     }
                 }
                 onSuccess?.invoke(messages)
@@ -84,30 +100,74 @@ class FirestoreRepo @Inject constructor() {
 
         }
 
-        firestore.collection(messagesColumn.name).whereIn(
-            messagesColumn.senderReceiver,
-            listOf("$userId:$otherUserId", "$otherUserId:$userId")
-        ).orderBy(messagesColumn.date, Query.Direction.ASCENDING).addSnapshotListener(listener)
+        var query = firestore.collection(messagesColumn.name)
+            .whereIn(messagesColumn.senderReceiver, listOf(listOf(userId, otherUserId)))
+            .orderBy(messagesColumn.date, Query.Direction.ASCENDING)
+            .limit(limit)
+        query = if (fromSnapshot == null) query else query.startAfter(fromSnapshot)
+        query.addSnapshotListener(listener)
 
         return listener
     }
 
 
-    fun sendMessage(
+    suspend fun sendMessage(
         targetId: String,
         message: String,
         onSuccess: (() -> Unit)?,
         onFailure: ((e: Exception) -> Unit)?
     ) {
-        val data = mapOf(
-            messagesColumn.date to FieldValue.serverTimestamp(),
-            messagesColumn.message to message,
-            messagesColumn.senderReceiver to "$userId:$targetId"
-        )
-        firestore.collection(messagesColumn.name).add(data).addOnSuccessListener {
+
+
+        try {
+            val messageData = mapOf(
+                messagesColumn.date to FieldValue.serverTimestamp(),
+                messagesColumn.message to message,
+                messagesColumn.senderReceiver to listOf(userId, targetId)
+            )
+
+            firestore.collection(messagesColumn.name).add(messageData).await()
+
+            val conversationCol = firestore.collection(conversationsColumn.name)
+            val conversationQuery = { whichId: String ->
+                conversationCol.whereEqualTo(conversationsColumn.owner, whichId)
+                    .whereIn(conversationsColumn.contacts, listOf(listOf(userId, targetId)))
+                    .get()
+            }
+
+
+            val myConversationSnapshot = conversationQuery(userId).await()
+            val otherUserConversationSnapshot = conversationQuery(targetId).await()
+
+            val newConversationData = { whichId: String ->
+                mapOf(
+                    conversationsColumn.owner to whichId,
+                    conversationsColumn.date to FieldValue.serverTimestamp(),
+                    conversationsColumn.contacts to listOf(userId, targetId)
+                )
+            }
+
+            myConversationSnapshot.documents.also {
+                val newData = newConversationData(userId)
+                if (it.isEmpty()) conversationCol.add(newData).await()
+                else it.forEach { doc -> doc.reference.update(newData).await() }
+            }
+
+
+            otherUserConversationSnapshot.documents.also {
+                val newData = newConversationData(targetId)
+                if (it.isEmpty()) conversationCol.add(newData).await()
+                else it.forEach { doc -> doc.reference.update(newData).await() }
+            }
+
             onSuccess?.invoke()
-        }.addOnFailureListener {
-            onFailure?.invoke(it)
+
+        } catch (e: Exception) {
+            onFailure?.invoke(e)
         }
+
+
     }
+
+
 }

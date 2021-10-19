@@ -15,7 +15,8 @@ object FirestoreStructure {
     class Conversations() : FirestoreColumn {
         override val name: String = "conversations"
         val owner = "owner"
-        val partnerUserId = "partnerUserId"
+        val contacts = "contacts"
+        val date = "date"
     }
 
 }

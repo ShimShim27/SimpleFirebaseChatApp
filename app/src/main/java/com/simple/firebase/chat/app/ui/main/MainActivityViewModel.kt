@@ -2,6 +2,7 @@ package com.simple.firebase.chat.app.ui.main
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.firestore.DocumentSnapshot
 import com.simple.firebase.chat.app.model.Conversation
 import com.simple.firebase.chat.app.repo.FirestoreRepo
 import kotlinx.coroutines.CoroutineScope
@@ -17,20 +18,21 @@ class MainActivityViewModel(private val firestoreRepo: FirestoreRepo) : ViewMode
 
 
     fun getConversationsIfNotYet() {
-        CoroutineScope(Dispatchers.Unconfined).launch {
-            if (!conversationsFetched) {
-                conversationsFetched = true
+        if (!conversationsFetched) {
+            conversationsFetched = true
 
-                val onSuccess = { conversations: List<Conversation> ->
-                    conversationsLiveData.postValue(conversations.toMutableList())
-                }
-
-                val onFailure = { e: Exception ->
-
-                }
-
-                firestoreRepo.getConversations(onSuccess, onFailure)
+            val onSuccess = { lastSnapshot: DocumentSnapshot?, conversations: List<Conversation> ->
+                conversationsLiveData.postValue(conversations.toMutableList())
             }
+
+            val onFailure = { e: Exception ->
+
+            }
+
+            CoroutineScope(Dispatchers.Unconfined).launch {
+                firestoreRepo.getConversations(10,null, onSuccess, onFailure)
+            }
+
         }
     }
 

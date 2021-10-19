@@ -1,4 +1,4 @@
-package com.simple.firebase.chat.app.model
+ package com.simple.firebase.chat.app.model
 
 import java.util.*
 

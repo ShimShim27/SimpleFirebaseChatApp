@@ -11,6 +11,7 @@ import com.simple.firebase.chat.app.dagger.DaggerViewModelComponent
 import com.simple.firebase.chat.app.dagger.ViewModelModule
 import com.simple.firebase.chat.app.ui.messages.MessagesActivity
 import com.simple.firebase.chat.app.util.MainUtil
+import kotlinx.coroutines.tasks.await
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         messagesRecyclerView.adapter = conversationRecyclerAdapter
 
         viewModel.getConversationsIfNotYet()
+
 
     }
 

@@ -5,6 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.simple.firebase.chat.app.model.Message
 import com.simple.firebase.chat.app.repo.FirestoreRepo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class MessagesActivityViewModel(private val firestoreRepo: FirestoreRepo) : ViewModel() {
@@ -21,8 +24,9 @@ class MessagesActivityViewModel(private val firestoreRepo: FirestoreRepo) : View
 
             val onFailure = { e: Exception ->
 
+
             }
-            firestoreRepo.getMessages(otherUserId, onSuccess, onFailure)
+            firestoreRepo.getMessages(5,null,otherUserId, onSuccess, onFailure)
         }
     }
 
@@ -36,7 +40,9 @@ class MessagesActivityViewModel(private val firestoreRepo: FirestoreRepo) : View
 
         }
 
-        firestoreRepo.sendMessage(targetId, message, onSuccess, onFailure)
+       CoroutineScope(Dispatchers.Unconfined).launch {
+           firestoreRepo.sendMessage(targetId, message, onSuccess, onFailure)
+       }
     }
 
     fun getUserId(): String = firestoreRepo.userId
