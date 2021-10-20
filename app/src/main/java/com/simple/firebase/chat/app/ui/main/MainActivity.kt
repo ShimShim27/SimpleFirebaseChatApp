@@ -3,25 +3,15 @@ package com.simple.firebase.chat.app.ui.main
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
-import androidx.paging.cachedIn
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.firestore.*
 import com.simple.firebase.chat.app.R
-import com.simple.firebase.chat.app.dagger.DaggerViewModelComponent
-import com.simple.firebase.chat.app.dagger.ViewModelModule
-import com.simple.firebase.chat.app.datasource.repo.FirestoreRepo
-import com.simple.firebase.chat.app.model.User
+import com.simple.firebase.chat.app.ui.account.AccountFragment
 import com.simple.firebase.chat.app.ui.messages.MessagesActivity
 import com.simple.firebase.chat.app.ui.searchuser.SearchUserFragment
 import com.simple.firebase.chat.app.util.MainUtil
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import java.text.SimpleDateFormat
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,6 +31,18 @@ class MainActivity : AppCompatActivity() {
         conversationRecyclerAdapter = ConversationRecyclerAdapter(viewModel)
         messagesRecyclerView.adapter = conversationRecyclerAdapter
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_activity_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.account-> AccountFragment().show(supportFragmentManager,null)
+        }
+        return true
     }
 
 

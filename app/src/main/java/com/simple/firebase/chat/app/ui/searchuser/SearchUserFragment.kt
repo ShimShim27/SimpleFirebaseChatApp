@@ -12,10 +12,13 @@ import android.widget.EditText
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.simple.firebase.chat.app.R
+import com.simple.firebase.chat.app.custom.BaseDialogFragment
 import com.simple.firebase.chat.app.ui.messages.MessagesActivity
 import com.simple.firebase.chat.app.util.MainUtil
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 
-class SearchUserFragment : DialogFragment(R.layout.search_user_fragment) {
+class SearchUserFragment :
+    BaseDialogFragment(R.layout.search_user_fragment, MATCH_PARENT, MATCH_PARENT) {
 
     private lateinit var viewModel: SearchUserFragmentViewModel
     private lateinit var searchUserRecyclerAdapter: SearchUserRecyclerAdapter
@@ -45,24 +48,6 @@ class SearchUserFragment : DialogFragment(R.layout.search_user_fragment) {
         userRecyclerList.adapter = searchUserRecyclerAdapter
 
 
-    }
-
-
-    override fun onResume() {
-        super.onResume()
-
-        val window = dialog?.window
-        if (window != null) {
-            val layoutParams = window.attributes as ViewGroup.LayoutParams
-            val size = ViewGroup.LayoutParams.MATCH_PARENT
-            layoutParams.width = size
-            layoutParams.height = size
-            window.attributes = layoutParams as WindowManager.LayoutParams
-
-            val back = ColorDrawable(Color.TRANSPARENT)
-            val inset = InsetDrawable(back, 20)
-            window.setBackgroundDrawable(inset)
-        }
     }
 
 

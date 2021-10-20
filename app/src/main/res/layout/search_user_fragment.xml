@@ -12,6 +12,7 @@
         android:orientation="horizontal">
 
         <EditText
+            android:inputType="text"
             android:layout_weight="1"
             android:id="@+id/searchUserInputBox"
             android:layout_width="match_parent"

@@ -5,13 +5,13 @@ import androidx.paging.PagingState
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
 import com.simple.firebase.chat.app.config.Config
-import com.simple.firebase.chat.app.datasource.repo.FirestoreRepo
+import com.simple.firebase.chat.app.datasource.repo.FirebaseRepo
 import com.simple.firebase.chat.app.model.Message
 import kotlinx.coroutines.delay
 import java.lang.Exception
 
 class MessagesPagingDataSource(
-    private val firestoreRepo: FirestoreRepo,
+    private val firebaseRepo: FirebaseRepo,
     private val otherUserId: String
 ) : PagingSource<DocumentSnapshot, Message>() {
     private var lastKey: DocumentSnapshot? = null
@@ -36,7 +36,7 @@ class MessagesPagingDataSource(
 
         registrations.forEach { it.remove() }
         registrations.add(
-            firestoreRepo.getMessagesViaSnapshot(
+            firebaseRepo.getMessagesViaSnapshot(
                 Config.MESSAGES_LIST_SIZE,
                 params.key,
                 otherUserId,

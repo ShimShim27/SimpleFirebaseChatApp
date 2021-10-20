@@ -3,19 +3,16 @@ package com.simple.firebase.chat.app.ui.searchuser
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.cachedIn
-import androidx.paging.liveData
+import androidx.paging.*
 import com.simple.firebase.chat.app.datasource.pagingsource.UsersPagingDataSource
-import com.simple.firebase.chat.app.datasource.repo.FirestoreRepo
-
-class SearchUserFragmentViewModel(private val firestoreRepo: FirestoreRepo) : ViewModel() {
+import com.simple.firebase.chat.app.datasource.repo.FirebaseRepo
+import com.simple.firebase.chat.app.config.Config
+class SearchUserFragmentViewModel(private val firebaseRepo: FirebaseRepo) : ViewModel() {
     private lateinit var currentUserDataSource: UsersPagingDataSource
     private var startWithQuery = ""
-    val usersLiveData = Pager(config = PagingConfig(10, enablePlaceholders = false),
+    val usersLiveData = Pager(config = PagingConfig(Config.USERS_LIST_SIZE.toInt(), enablePlaceholders = false),
         pagingSourceFactory = {
-            currentUserDataSource = UsersPagingDataSource(firestoreRepo, startWithQuery)
+            currentUserDataSource = UsersPagingDataSource(firebaseRepo, startWithQuery)
             currentUserDataSource
         }
     ).liveData.cachedIn(viewModelScope)

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Simple Firebase Chat App</string>
+    <string name="login_failed_message">Login failed or cancelled</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.simple.firebase.chat.app.ui.messages
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -11,20 +10,20 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.simple.firebase.chat.app.config.Config
 import com.simple.firebase.chat.app.datasource.pagingsource.MessagesPagingDataSource
 import com.simple.firebase.chat.app.model.Message
-import com.simple.firebase.chat.app.datasource.repo.FirestoreRepo
+import com.simple.firebase.chat.app.datasource.repo.FirebaseRepo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
-class MessagesActivityViewModel(private val firestoreRepo: FirestoreRepo) : ViewModel() {
+class MessagesActivityViewModel(private val firebaseRepo: FirebaseRepo) : ViewModel() {
     private lateinit var currentMessagesSource: MessagesPagingDataSource
     lateinit var otherUserId: String
 
     val messagesLiveData =
         Pager(config = PagingConfig(Config.MESSAGES_LIST_SIZE.toInt(), enablePlaceholders = false),
             pagingSourceFactory = {
-                currentMessagesSource = MessagesPagingDataSource(firestoreRepo, otherUserId)
+                currentMessagesSource = MessagesPagingDataSource(firebaseRepo, otherUserId)
                 currentMessagesSource
             }
         ).liveData.cachedIn(viewModelScope)
@@ -39,7 +38,7 @@ class MessagesActivityViewModel(private val firestoreRepo: FirestoreRepo) : View
 
             val onFailure = { e: Exception ->
             }
-            firestoreRepo.getMessagesViaSnapshot(
+            firebaseRepo.getMessagesViaSnapshot(
                 Config.MESSAGES_LIST_SIZE,
                 null,
                 otherUserId,
@@ -61,11 +60,11 @@ class MessagesActivityViewModel(private val firestoreRepo: FirestoreRepo) : View
         }
 
         CoroutineScope(Dispatchers.Unconfined).launch {
-            firestoreRepo.sendMessage(otherUserId, message, onSuccess, onFailure)
+            firebaseRepo.sendMessage(otherUserId, message, onSuccess, onFailure)
         }
     }
 
-    fun getUserId(): String = firestoreRepo.userId
+    fun getUserId(): String = firebaseRepo.userId
 
 
 }

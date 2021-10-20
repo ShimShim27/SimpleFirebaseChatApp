@@ -1,6 +1,11 @@
 package com.simple.firebase.chat.app.datasource.repo
 
+import android.content.Intent
 import android.util.Log
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthCredential
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.EventListener
 import com.simple.firebase.chat.app.config.Config
@@ -10,16 +15,75 @@ import com.simple.firebase.chat.app.model.User
 import com.simple.firebase.chat.app.structure.FirestoreStructure
 import kotlinx.coroutines.tasks.await
 import java.lang.Exception
+import java.lang.reflect.Field
 import java.util.*
 import javax.inject.Inject
 
-class FirestoreRepo @Inject constructor() {
+class FirebaseRepo @Inject constructor() {
     private val firestore = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+
     private val messagesColumn = FirestoreStructure.Messages()
     private val conversationsColumn = FirestoreStructure.Conversations()
     private val usersColumn = FirestoreStructure.Users()
 
-    val userId = "UserId1"
+    val userId: String
+        get() {
+            return auth.currentUser?.uid ?: ""
+        }
+
+    val email: String
+        get() {
+            return auth.currentUser?.email ?: ""
+        }
+
+
+    suspend fun loginViaGoogle(
+        account: GoogleSignInAccount,
+        onSuccess: (() -> Unit)?,
+        onFailure: ((e: Exception) -> Unit)?
+    ) {
+
+        try {
+            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+            auth.signInWithCredential(credential).await()
+
+            /**
+             * Check if user account
+             * data exists in firestore. If not
+             * then create one.
+             */
+            val querySnapshot =
+                firestore.collection(usersColumn.name).whereEqualTo(FieldPath.documentId(), userId)
+                    .get().await()
+            var user: User? = null
+            querySnapshot.documents.apply {
+                if (isNotEmpty()) {
+                    try {
+                        val doc = get(0)
+                        user = User(doc.id, doc.getString(usersColumn.nameField)!!)
+                    } catch (e: Exception) {
+                    }
+                }
+            }
+
+            if (user != null) onSuccess?.invoke()
+            else {
+                val data = mapOf(usersColumn.nameField to "User ${Random().nextInt()}")
+                firestore.collection(usersColumn.name).document(userId).set(data).await()
+                onSuccess?.invoke()
+            }
+
+        } catch (e: Exception) {
+            auth.signOut()
+            onFailure?.invoke(e)
+        }
+
+    }
+
+    fun logout() {
+        auth.signOut()
+    }
 
 
     fun getConversationsViaSnapshot(
@@ -108,7 +172,10 @@ class FirestoreRepo @Inject constructor() {
         }
 
         var query = firestore.collection(messagesColumn.name)
-            .whereIn(messagesColumn.senderReceiver, listOf(listOf(userId, otherUserId)))
+            .whereIn(
+                messagesColumn.senderReceiver,
+                listOf(listOf(userId, otherUserId), listOf(otherUserId, userId))
+            )
             .orderBy(messagesColumn.date, Query.Direction.ASCENDING)
             .limitToLast(limit)
         query = if (upToSnapshot == null) query else query.endBefore(upToSnapshot)
@@ -183,7 +250,10 @@ class FirestoreRepo @Inject constructor() {
             val conversationCol = firestore.collection(conversationsColumn.name)
             val conversationQuery = { whichId: String ->
                 conversationCol.whereEqualTo(conversationsColumn.owner, whichId)
-                    .whereIn(conversationsColumn.contacts, listOf(listOf(userId, targetId)))
+                    .whereIn(
+                        conversationsColumn.contacts,
+                        listOf(listOf(userId, targetId), listOf(targetId, userId))
+                    )
                     .get()
             }
 
@@ -223,6 +293,45 @@ class FirestoreRepo @Inject constructor() {
         }
 
 
+    }
+
+
+    fun getUserViaSnapshotWithUserId(
+        userId: String,
+        onSuccess: ((user: User?) -> Unit)?,
+        onFailure: ((e: Exception) -> Unit)?
+    ): ListenerRegistration {
+
+        val listener = object : EventListener<DocumentSnapshot> {
+            override fun onEvent(value: DocumentSnapshot?, error: FirebaseFirestoreException?) {
+                if (error != null) {
+                    onFailure?.invoke(error)
+                    return
+                }
+                var user: User? = null
+                if (value != null) user = User(value.id, value.getString(usersColumn.nameField)!!)
+
+                onSuccess?.invoke(user)
+            }
+
+        }
+
+        return firestore.collection(usersColumn.name).document(userId).addSnapshotListener(listener)
+    }
+
+
+    suspend fun updateOwnAccountName(
+        name: String,
+        onSuccess: (() -> Unit)?,
+        onFailure: ((e: Exception) -> Unit)?
+    ) {
+        try {
+            firestore.collection(usersColumn.name).document(userId)
+                .update(mapOf(usersColumn.nameField to name)).await()
+            onSuccess?.invoke()
+        } catch (e: Exception) {
+            onFailure?.invoke(e)
+        }
     }
 
 

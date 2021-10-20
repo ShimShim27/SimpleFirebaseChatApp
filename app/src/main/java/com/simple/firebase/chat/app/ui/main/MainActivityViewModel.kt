@@ -8,11 +8,11 @@ import androidx.paging.*
 import com.google.firebase.firestore.DocumentSnapshot
 import com.simple.firebase.chat.app.datasource.pagingsource.ConversationsPagingDataSource
 import com.simple.firebase.chat.app.model.Conversation
-import com.simple.firebase.chat.app.datasource.repo.FirestoreRepo
+import com.simple.firebase.chat.app.datasource.repo.FirebaseRepo
 import com.simple.firebase.chat.app.config.Config
 
 class MainActivityViewModel(
-    private val firestoreRepo: FirestoreRepo,
+    private val firebaseRepo: FirebaseRepo,
 ) : ViewModel() {
     private lateinit var currentConversationSource: ConversationsPagingDataSource
     private var conversationUpdatedSet = false
@@ -22,7 +22,7 @@ class MainActivityViewModel(
             enablePlaceholders = false
         ),
             pagingSourceFactory = {
-                currentConversationSource = ConversationsPagingDataSource(firestoreRepo)
+                currentConversationSource = ConversationsPagingDataSource(firebaseRepo)
                 currentConversationSource
             }
         ).liveData.cachedIn(viewModelScope)
@@ -38,7 +38,7 @@ class MainActivityViewModel(
             val onSuccess = { _: DocumentSnapshot?, _: List<Conversation> ->
                 currentConversationSource.invalidate()
             }
-            firestoreRepo.getConversationsViaSnapshot(
+            firebaseRepo.getConversationsViaSnapshot(
                 Config.CONVERSATION_LIST_SIZE,
                 null,
                 onSuccess,

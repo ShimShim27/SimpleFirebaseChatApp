@@ -1,19 +1,15 @@
 package com.simple.firebase.chat.app.dagger
 
-import android.app.Activity
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.*
-import androidx.paging.*
-import com.simple.firebase.chat.app.datasource.pagingsource.ConversationsPagingDataSource
-import com.simple.firebase.chat.app.datasource.repo.FirestoreRepo
-import com.simple.firebase.chat.app.model.Conversation
+import com.simple.firebase.chat.app.datasource.repo.FirebaseRepo
+import com.simple.firebase.chat.app.ui.account.AccountFragmentViewModel
+import com.simple.firebase.chat.app.ui.login.LoginActivityViewModel
 import com.simple.firebase.chat.app.ui.main.MainActivityViewModel
 import com.simple.firebase.chat.app.ui.messages.MessagesActivityViewModel
 import com.simple.firebase.chat.app.ui.searchuser.SearchUserFragmentViewModel
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 
 
 @Module
@@ -21,13 +17,13 @@ class ViewModelModule(private val context: Context) {
 
     @Provides
     fun providesMainActivityViewModel(
-        firestoreRepo: FirestoreRepo
+        firebaseRepo: FirebaseRepo
     ): MainActivityViewModel {
         return ViewModelProvider(context as ViewModelStoreOwner,
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     @Suppress("UNCHECKED_CAST")
-                    return MainActivityViewModel(firestoreRepo) as T
+                    return MainActivityViewModel(firebaseRepo) as T
                 }
 
             }).get(MainActivityViewModel::class.java)
@@ -35,12 +31,12 @@ class ViewModelModule(private val context: Context) {
 
 
     @Provides
-    fun providesMessagesActivityViewModel(firestoreRepo: FirestoreRepo): MessagesActivityViewModel {
+    fun providesMessagesActivityViewModel(firebaseRepo: FirebaseRepo): MessagesActivityViewModel {
         return ViewModelProvider(context as ViewModelStoreOwner,
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     @Suppress("UNCHECKED_CAST")
-                    return MessagesActivityViewModel(firestoreRepo) as T
+                    return MessagesActivityViewModel(firebaseRepo) as T
                 }
 
             }).get(MessagesActivityViewModel::class.java)
@@ -48,15 +44,40 @@ class ViewModelModule(private val context: Context) {
 
 
     @Provides
-    fun providesSearchUserFragmentViewModel(firestoreRepo: FirestoreRepo): SearchUserFragmentViewModel {
+    fun providesSearchUserFragmentViewModel(firebaseRepo: FirebaseRepo): SearchUserFragmentViewModel {
         return ViewModelProvider(context as ViewModelStoreOwner,
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     @Suppress("UNCHECKED_CAST")
-                    return SearchUserFragmentViewModel(firestoreRepo) as T
+                    return SearchUserFragmentViewModel(firebaseRepo) as T
                 }
 
             }).get(SearchUserFragmentViewModel::class.java)
+    }
+
+    @Provides
+    fun providesLoginActivityViewModel(firebaseRepo: FirebaseRepo): LoginActivityViewModel {
+        return ViewModelProvider(context as ViewModelStoreOwner,
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                    @Suppress("UNCHECKED_CAST")
+                    return LoginActivityViewModel(firebaseRepo) as T
+                }
+
+            }).get(LoginActivityViewModel::class.java)
+    }
+
+
+    @Provides
+    fun providesAccountFragmentViewModel(firebaseRepo: FirebaseRepo): AccountFragmentViewModel {
+        return ViewModelProvider(context as ViewModelStoreOwner,
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                    @Suppress("UNCHECKED_CAST")
+                    return AccountFragmentViewModel(firebaseRepo) as T
+                }
+
+            }).get(AccountFragmentViewModel::class.java)
     }
 
 

@@ -5,12 +5,12 @@ import androidx.paging.PagingState
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
 import com.simple.firebase.chat.app.config.Config
-import com.simple.firebase.chat.app.datasource.repo.FirestoreRepo
+import com.simple.firebase.chat.app.datasource.repo.FirebaseRepo
 import com.simple.firebase.chat.app.model.Conversation
 import kotlinx.coroutines.*
 import java.lang.Exception
 
-class ConversationsPagingDataSource(private val firestoreRepo: FirestoreRepo) :
+class ConversationsPagingDataSource(private val firebaseRepo: FirebaseRepo) :
     PagingSource<DocumentSnapshot, Conversation>() {
     private val registrations = mutableListOf<ListenerRegistration>()
     private var lastKey: DocumentSnapshot? = null
@@ -35,7 +35,7 @@ class ConversationsPagingDataSource(private val firestoreRepo: FirestoreRepo) :
 
         registrations.forEach { it.remove() }
         registrations.add(
-            firestoreRepo.getConversationsViaSnapshot(
+            firebaseRepo.getConversationsViaSnapshot(
                 Config.CONVERSATION_LIST_SIZE,
                 params.key,
                 onSuccess,
