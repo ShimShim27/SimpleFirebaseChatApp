@@ -6,6 +6,7 @@ import com.google.firebase.firestore.EventListener
 import com.simple.firebase.chat.app.config.Config
 import com.simple.firebase.chat.app.model.Conversation
 import com.simple.firebase.chat.app.model.Message
+import com.simple.firebase.chat.app.model.User
 import com.simple.firebase.chat.app.structure.FirestoreStructure
 import kotlinx.coroutines.tasks.await
 import java.lang.Exception
@@ -16,6 +17,8 @@ class FirestoreRepo @Inject constructor() {
     private val firestore = FirebaseFirestore.getInstance()
     private val messagesColumn = FirestoreStructure.Messages()
     private val conversationsColumn = FirestoreStructure.Conversations()
+    private val usersColumn = FirestoreStructure.Users()
+
     val userId = "UserId1"
 
 
@@ -111,6 +114,48 @@ class FirestoreRepo @Inject constructor() {
         query = if (upToSnapshot == null) query else query.endBefore(upToSnapshot)
         return query.addSnapshotListener(listener)
 
+    }
+
+
+    fun getUsersViaSnapshot(
+        startsWith: String,
+        limit: Long,
+        fromSnapshot: DocumentSnapshot?,
+        onSuccess: ((lastDocumentSnapshot: DocumentSnapshot?, users: List<User>) -> Unit)?,
+        onFailure: ((e: Exception) -> Unit)?
+    ): ListenerRegistration {
+
+        val listener = object : EventListener<QuerySnapshot> {
+            override fun onEvent(value: QuerySnapshot?, error: FirebaseFirestoreException?) {
+                if (error != null) {
+                    onFailure?.invoke(error)
+                    return
+                }
+
+                val documents = value!!.documents
+                val users = mutableListOf<User>()
+                var lastDocumentSnapshot: DocumentSnapshot? = null
+                documents.forEach { doc ->
+                    try {
+                        users.add(User(doc.id, doc.getString(usersColumn.nameField)!!))
+                        lastDocumentSnapshot = doc
+                    } catch (e: Exception) {
+                    }
+                }
+
+                onSuccess?.invoke(lastDocumentSnapshot, users.filter { it.id != userId })
+
+            }
+
+        }
+        var query = firestore.collection(usersColumn.name)
+            .limit(limit)
+            .orderBy(usersColumn.nameField)
+            .startAt(startsWith)
+            .endAt("$startsWith\uf8ff")
+
+        query = if (fromSnapshot == null) query else query.startAfter(fromSnapshot)
+        return query.addSnapshotListener(listener)
     }
 
 

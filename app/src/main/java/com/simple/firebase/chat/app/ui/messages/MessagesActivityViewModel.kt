@@ -21,12 +21,13 @@ class MessagesActivityViewModel(private val firestoreRepo: FirestoreRepo) : View
     private lateinit var currentMessagesSource: MessagesPagingDataSource
     lateinit var otherUserId: String
 
-    val messagesLiveData = Pager(config = PagingConfig(Config.MESSAGES_LIST_SIZE.toInt()),
-        pagingSourceFactory = {
-            currentMessagesSource = MessagesPagingDataSource(firestoreRepo, otherUserId)
-            currentMessagesSource
-        }
-    ).liveData.cachedIn(viewModelScope)
+    val messagesLiveData =
+        Pager(config = PagingConfig(Config.MESSAGES_LIST_SIZE.toInt(), enablePlaceholders = false),
+            pagingSourceFactory = {
+                currentMessagesSource = MessagesPagingDataSource(firestoreRepo, otherUserId)
+                currentMessagesSource
+            }
+        ).liveData.cachedIn(viewModelScope)
 
     private var messagesUpdateListenerSet = false
 

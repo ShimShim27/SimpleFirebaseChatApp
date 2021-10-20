@@ -10,6 +10,7 @@ import com.simple.firebase.chat.app.datasource.repo.FirestoreRepo
 import com.simple.firebase.chat.app.model.Conversation
 import com.simple.firebase.chat.app.ui.main.MainActivityViewModel
 import com.simple.firebase.chat.app.ui.messages.MessagesActivityViewModel
+import com.simple.firebase.chat.app.ui.searchuser.SearchUserFragmentViewModel
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -45,6 +46,18 @@ class ViewModelModule(private val context: Context) {
             }).get(MessagesActivityViewModel::class.java)
     }
 
+
+    @Provides
+    fun providesSearchUserFragmentViewModel(firestoreRepo: FirestoreRepo): SearchUserFragmentViewModel {
+        return ViewModelProvider(context as ViewModelStoreOwner,
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                    @Suppress("UNCHECKED_CAST")
+                    return SearchUserFragmentViewModel(firestoreRepo) as T
+                }
+
+            }).get(SearchUserFragmentViewModel::class.java)
+    }
 
 
 }

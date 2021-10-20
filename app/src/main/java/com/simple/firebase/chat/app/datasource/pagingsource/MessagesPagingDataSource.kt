@@ -47,7 +47,7 @@ class MessagesPagingDataSource(
 
 
         while (!done) {
-            delay(10)
+            delay(Config.PAGING_DATA_SOURCE_SNAPSHOT_DELAY_WAITING)
         }
 
         lastKey = params.key

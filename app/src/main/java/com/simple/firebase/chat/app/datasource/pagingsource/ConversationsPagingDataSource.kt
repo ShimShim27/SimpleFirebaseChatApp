@@ -13,7 +13,7 @@ import java.lang.Exception
 class ConversationsPagingDataSource(private val firestoreRepo: FirestoreRepo) :
     PagingSource<DocumentSnapshot, Conversation>() {
     private val registrations = mutableListOf<ListenerRegistration>()
-    private var lastKey:DocumentSnapshot? = null
+    private var lastKey: DocumentSnapshot? = null
     override fun getRefreshKey(state: PagingState<DocumentSnapshot, Conversation>): DocumentSnapshot? =
         null
 
@@ -44,7 +44,7 @@ class ConversationsPagingDataSource(private val firestoreRepo: FirestoreRepo) :
         )
 
         while (!done) {
-            delay(10)
+            delay(Config.PAGING_DATA_SOURCE_SNAPSHOT_DELAY_WAITING)
         }
 
         lastKey = params.key
