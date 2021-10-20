@@ -31,7 +31,7 @@ class UsersPagingDataSource(
                 done = true
             }
 
-            val onFailure = { e: Exception ->
+            val onFailure = { _: Exception ->
                 done = true
             }
 

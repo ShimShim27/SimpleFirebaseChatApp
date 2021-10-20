@@ -17,6 +17,7 @@ import java.lang.Exception
 
 class LoginActivityViewModel(private val firebaseRepo: FirebaseRepo) : ViewModel() {
 
+    val notLoginLiveData = MutableLiveData(false)
     val launchGoogleLoginLiveData = MutableLiveData<Intent?>()
     val signFailedLiveData = MutableLiveData<Exception?>()
     val signInSuccessLiveData = MutableLiveData(false)
@@ -24,6 +25,7 @@ class LoginActivityViewModel(private val firebaseRepo: FirebaseRepo) : ViewModel
 
     fun checkIfSignedIn() {
         if (firebaseRepo.userId.isNotEmpty()) signInSuccessLiveData.postValue(true)
+        else notLoginLiveData.postValue(true)
     }
 
     fun launchGoogleLogin(context: Context, webClientId: String) {

@@ -33,7 +33,7 @@ class MessagesActivity : AppCompatActivity() {
 
         messagesRecyclerAdapter = MessagesRecyclerAdapter(viewModel)
         messagesRecyclerView.adapter = messagesRecyclerAdapter
-
+        messagesRecyclerView.addItemDecoration(MessagesRecyclerDecoration())
         viewModel.setMessagesUpdateListener()
     }
 

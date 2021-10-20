@@ -21,13 +21,8 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
 
-        launchGoogleLogin =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                viewModel.onGoogleLoginResult(this, getString(R.string.default_web_client_id), it)
-            }
-
+        supportActionBar?.hide()
         initViewModel()
         viewModel.checkIfSignedIn()
 
@@ -58,6 +53,24 @@ class LoginActivity : AppCompatActivity() {
                 viewModel.signInSuccessLiveData.value = false
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
+            }
+        })
+
+        viewModel.notLoginLiveData.observe(this, {
+            if (it) {
+                viewModel.notLoginLiveData.value = false
+                setContentView(R.layout.activity_login)
+
+                launchGoogleLogin =
+                    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                        viewModel.onGoogleLoginResult(
+                            this,
+                            getString(R.string.default_web_client_id),
+                            result
+                        )
+                    }
+
+                supportActionBar?.show()
             }
         })
     }

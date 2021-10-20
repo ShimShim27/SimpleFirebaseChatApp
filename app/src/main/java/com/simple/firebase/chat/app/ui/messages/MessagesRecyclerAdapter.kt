@@ -1,17 +1,21 @@
 package com.simple.firebase.chat.app.ui.messages
 
+import android.graphics.Color
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.simple.firebase.chat.app.R
 import com.simple.firebase.chat.app.model.Message
+import com.simple.firebase.chat.app.util.MainUtil
 
 class MessagesRecyclerAdapter(private val viewModel: MessagesActivityViewModel) :
     PagingDataAdapter<Message, MessagesRecyclerAdapter.CustomViewHolder>(callback) {
@@ -32,23 +36,38 @@ class MessagesRecyclerAdapter(private val viewModel: MessagesActivityViewModel) 
     }
 
 
-    inner class CustomViewHolder(v: View) : RecyclerView.ViewHolder(v) {
+    inner class CustomViewHolder(val v: LinearLayout) : RecyclerView.ViewHolder(v) {
         val messageView: TextView = v.findViewById(R.id.messageView)
+        val messageContainerCardView: CardView = v.findViewById(R.id.messageContainerCardView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         return CustomViewHolder(
             LayoutInflater.from(parent.context)
-                .inflate(R.layout.messages_recycler_box, parent, false)
+                .inflate(R.layout.messages_recycler_box, parent, false) as LinearLayout
         )
     }
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         val message = getItem(position)!!
-        holder.messageView.apply {
-            text = message.message
-            gravity = if (message.sender == viewModel.getUserId()) Gravity.END else Gravity.START
-        }
+        val isSender = message.sender == viewModel.getUserId()
+        val context = holder.v.context
+        val sidePadding = 100
+
+        holder.messageView.text = message.message
+        holder.v.gravity = if (isSender) Gravity.END else Gravity.START
+        holder.v.setPadding(
+            if (isSender) sidePadding else 0,
+            0,
+            if (isSender) 0 else sidePadding,
+            0
+        )
+        holder.messageContainerCardView.setCardBackgroundColor(
+            MainUtil.getColorFromAttr(
+                context,
+                if (isSender) R.attr.colorPrimary else R.attr.rippleColor
+            )
+        )
 
     }
 }

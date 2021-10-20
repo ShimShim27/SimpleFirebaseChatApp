@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.setConversationUpdateListener()
         conversationRecyclerAdapter = ConversationRecyclerAdapter(viewModel)
         messagesRecyclerView.adapter = conversationRecyclerAdapter
+        messagesRecyclerView.addItemDecoration(ConversationRecyclerDecoration())
 
     }
 
@@ -39,8 +40,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            R.id.account-> AccountFragment().show(supportFragmentManager,null)
+        when (item.itemId) {
+            R.id.account -> AccountFragment().show(supportFragmentManager, null)
         }
         return true
     }

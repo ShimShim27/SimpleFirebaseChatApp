@@ -1,5 +1,6 @@
 package com.simple.firebase.chat.app.datasource.pagingsource
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.google.firebase.firestore.DocumentSnapshot
@@ -45,6 +46,14 @@ class ConversationsPagingDataSource(private val firebaseRepo: FirebaseRepo) :
 
         while (!done) {
             delay(Config.PAGING_DATA_SOURCE_SNAPSHOT_DELAY_WAITING)
+        }
+
+        conversationsList.forEach { conversation ->
+            firebaseRepo.getUserWithUserId(conversation.partnerUserId, {
+                if (it != null) conversation.name = it.name
+            }, {
+
+            })
         }
 
         lastKey = params.key

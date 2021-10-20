@@ -107,7 +107,13 @@ class FirebaseRepo @Inject constructor() {
                 value?.documents?.forEach { doc ->
                     try {
                         val contacts = doc.get(conversationsColumn.contacts) as List<String>
-                        conversations.add(Conversation(if (contacts[0] == userId) contacts[1] else contacts[0]))
+                        conversations.add(
+                            Conversation(
+                                "",
+                                if (contacts[0] == userId) contacts[1] else contacts[0],
+                                "https://avatars.dicebear.com/api/bottts/${Random().nextLong()}.svg"
+                            )
+                        )
                         lastDocumentSnapshot = doc
                     } catch (e: Exception) {
 
@@ -317,6 +323,25 @@ class FirebaseRepo @Inject constructor() {
         }
 
         return firestore.collection(usersColumn.name).document(userId).addSnapshotListener(listener)
+    }
+
+
+    suspend fun getUserWithUserId(
+        userId: String,
+        onSuccess: ((user: User?) -> Unit)?,
+        onFailure: ((e: Exception) -> Unit)?
+    ) {
+        try {
+            val documentSnapshot =
+                firestore.collection(usersColumn.name).document(userId).get().await()
+            var user: User? = null
+            if (documentSnapshot != null) user =
+                User(documentSnapshot.id, documentSnapshot.getString(usersColumn.nameField)!!)
+            onSuccess?.invoke(user)
+        } catch (e: Exception) {
+            onFailure?.invoke(e)
+        }
+
     }
 
 
