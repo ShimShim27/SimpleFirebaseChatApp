@@ -1,21 +1,16 @@
 package com.simple.firebase.chat.app.datasource.repo
 
-import android.content.Intent
-import android.util.Log
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.EventListener
-import com.simple.firebase.chat.app.config.Config
+import com.simple.firebase.chat.app.constants.FirestoreStructure
 import com.simple.firebase.chat.app.model.Conversation
 import com.simple.firebase.chat.app.model.Message
 import com.simple.firebase.chat.app.model.User
-import com.simple.firebase.chat.app.structure.FirestoreStructure
+import com.simple.firebase.chat.app.util.MainUtil
 import kotlinx.coroutines.tasks.await
-import java.lang.Exception
-import java.lang.reflect.Field
 import java.util.*
 import javax.inject.Inject
 
@@ -111,7 +106,7 @@ class FirebaseRepo @Inject constructor() {
                             Conversation(
                                 "",
                                 if (contacts[0] == userId) contacts[1] else contacts[0],
-                                "https://avatars.dicebear.com/api/bottts/${Random().nextLong()}.svg"
+                                MainUtil.getRandomAvatarLink()
                             )
                         )
                         lastDocumentSnapshot = doc

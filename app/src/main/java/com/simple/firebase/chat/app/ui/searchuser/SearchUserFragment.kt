@@ -1,21 +1,15 @@
 package com.simple.firebase.chat.app.ui.searchuser
 
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.EditText
-import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.simple.firebase.chat.app.R
 import com.simple.firebase.chat.app.custom.BaseDialogFragment
 import com.simple.firebase.chat.app.ui.messages.MessagesActivity
 import com.simple.firebase.chat.app.util.MainUtil
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 
 class SearchUserFragment :
     BaseDialogFragment(R.layout.search_user_fragment, MATCH_PARENT, MATCH_PARENT) {
@@ -59,11 +53,12 @@ class SearchUserFragment :
             searchUserRecyclerAdapter.submitData(viewLifecycleOwner.lifecycle, it)
         })
 
-        viewModel.gotoMessageActivityLiveData.observe(this, { otherUserId ->
-            if (otherUserId != null) {
+        viewModel.gotoMessageActivityLiveData.observe(this, { user ->
+            if (user != null) {
                 viewModel.gotoMessageActivityLiveData.value = null
                 startActivity(Intent(requireContext(), MessagesActivity::class.java).apply {
-                    putExtra(MessagesActivity.EXTRA_OTHER_USER_ID, otherUserId)
+                    putExtra(MessagesActivity.EXTRA_OTHER_USER_ID, user.id)
+                    putExtra(MessagesActivity.EXTRA_OTHER_USER_NAME, user.name)
                 })
             }
         })

@@ -7,7 +7,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import androidx.paging.liveData
 import com.google.firebase.firestore.DocumentSnapshot
-import com.simple.firebase.chat.app.config.Config
+import com.simple.firebase.chat.app.constants.Config
 import com.simple.firebase.chat.app.datasource.pagingsource.MessagesPagingDataSource
 import com.simple.firebase.chat.app.model.Message
 import com.simple.firebase.chat.app.datasource.repo.FirebaseRepo

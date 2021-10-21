@@ -3,7 +3,6 @@ package com.simple.firebase.chat.app.ui.main
 import android.graphics.Rect
 import android.view.View
 import androidx.core.view.children
-import androidx.core.view.size
 import androidx.recyclerview.widget.RecyclerView
 
 class ConversationRecyclerDecoration : RecyclerView.ItemDecoration() {

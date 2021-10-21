@@ -1,15 +1,11 @@
 package com.simple.firebase.chat.app.ui.login
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import androidx.appcompat.app.AppCompatActivity
 import com.simple.firebase.chat.app.R
 import com.simple.firebase.chat.app.ui.main.MainActivity
 import com.simple.firebase.chat.app.util.MainUtil
@@ -24,6 +20,15 @@ class LoginActivity : AppCompatActivity() {
 
         supportActionBar?.hide()
         initViewModel()
+        launchGoogleLogin =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                viewModel.onGoogleLoginResult(
+                    this,
+                    getString(R.string.default_web_client_id),
+                    result
+                )
+            }
+
         viewModel.checkIfSignedIn()
 
     }
@@ -60,16 +65,6 @@ class LoginActivity : AppCompatActivity() {
             if (it) {
                 viewModel.notLoginLiveData.value = false
                 setContentView(R.layout.activity_login)
-
-                launchGoogleLogin =
-                    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                        viewModel.onGoogleLoginResult(
-                            this,
-                            getString(R.string.default_web_client_id),
-                            result
-                        )
-                    }
-
                 supportActionBar?.show()
             }
         })

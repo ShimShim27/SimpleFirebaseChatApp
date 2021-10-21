@@ -15,6 +15,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.simple.firebase.chat.app.dagger.DaggerViewModelComponent
 import com.simple.firebase.chat.app.dagger.ViewModelComponent
 import com.simple.firebase.chat.app.dagger.ViewModelModule
+import java.util.*
 
 object MainUtil {
     fun getViewModuleComponent(context: Context): ViewModelComponent =
@@ -57,4 +58,6 @@ object MainUtil {
         context.theme.resolveAttribute(attr, typedValue, true)
         return typedValue.data
     }
+
+    fun getRandomAvatarLink():String = "https://avatars.dicebear.com/api/bottts/${Random().nextLong()}.svg"
 }

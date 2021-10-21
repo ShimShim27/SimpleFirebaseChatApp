@@ -4,7 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
-import com.simple.firebase.chat.app.config.Config
+import com.simple.firebase.chat.app.constants.Config
 import com.simple.firebase.chat.app.datasource.repo.FirebaseRepo
 import com.simple.firebase.chat.app.model.Message
 import kotlinx.coroutines.delay

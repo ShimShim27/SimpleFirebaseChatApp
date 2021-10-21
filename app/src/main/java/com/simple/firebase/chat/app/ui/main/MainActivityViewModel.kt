@@ -9,7 +9,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.simple.firebase.chat.app.datasource.pagingsource.ConversationsPagingDataSource
 import com.simple.firebase.chat.app.model.Conversation
 import com.simple.firebase.chat.app.datasource.repo.FirebaseRepo
-import com.simple.firebase.chat.app.config.Config
+import com.simple.firebase.chat.app.constants.Config
 
 class MainActivityViewModel(
     private val firebaseRepo: FirebaseRepo,
@@ -27,10 +27,10 @@ class MainActivityViewModel(
             }
         ).liveData.cachedIn(viewModelScope)
 
-    val gotoMessagesLiveData = MutableLiveData<String?>()
+    val gotoMessagesLiveData = MutableLiveData<Conversation?>()
 
-    fun gotoMessages(otherUserId: String) {
-        gotoMessagesLiveData.postValue(otherUserId)
+    fun gotoMessages(conversation: Conversation) {
+        gotoMessagesLiveData.postValue(conversation)
     }
 
     fun setConversationUpdateListener() {

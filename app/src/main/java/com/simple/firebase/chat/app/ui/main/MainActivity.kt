@@ -1,11 +1,11 @@
 package com.simple.firebase.chat.app.ui.main
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.simple.firebase.chat.app.R
 import com.simple.firebase.chat.app.ui.account.AccountFragment
@@ -57,7 +57,8 @@ class MainActivity : AppCompatActivity() {
             if (it != null) {
                 viewModel.gotoMessagesLiveData.value = null
                 startActivity(Intent(this, MessagesActivity::class.java).apply {
-                    putExtra(MessagesActivity.EXTRA_OTHER_USER_ID, it)
+                    putExtra(MessagesActivity.EXTRA_OTHER_USER_ID, it.partnerUserId)
+                    putExtra(MessagesActivity.EXTRA_OTHER_USER_NAME, it.name)
                 })
             }
 

@@ -3,15 +3,12 @@ package com.simple.firebase.chat.app.ui.account
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.simple.firebase.chat.app.datasource.repo.FirebaseRepo
 import com.simple.firebase.chat.app.model.User
 import com.simple.firebase.chat.app.util.MainUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 class AccountFragmentViewModel(private val firebaseRepo: FirebaseRepo) : ViewModel() {
 

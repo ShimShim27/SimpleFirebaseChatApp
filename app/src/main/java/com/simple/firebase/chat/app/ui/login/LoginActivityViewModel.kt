@@ -6,14 +6,11 @@ import androidx.activity.result.ActivityResult
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.simple.firebase.chat.app.datasource.repo.FirebaseRepo
 import com.simple.firebase.chat.app.util.MainUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 class LoginActivityViewModel(private val firebaseRepo: FirebaseRepo) : ViewModel() {
 

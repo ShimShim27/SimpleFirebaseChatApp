@@ -1,4 +1,4 @@
-package com.simple.firebase.chat.app.structure
+package com.simple.firebase.chat.app.constants
 
 object FirestoreStructure {
     interface FirestoreColumn {

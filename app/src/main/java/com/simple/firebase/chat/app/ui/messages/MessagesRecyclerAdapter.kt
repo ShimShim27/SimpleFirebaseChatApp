@@ -1,17 +1,13 @@
 package com.simple.firebase.chat.app.ui.messages
 
-import android.graphics.Color
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.simple.firebase.chat.app.R
 import com.simple.firebase.chat.app.model.Message

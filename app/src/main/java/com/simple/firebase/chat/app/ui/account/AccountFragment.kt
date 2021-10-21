@@ -3,12 +3,11 @@ package com.simple.firebase.chat.app.ui.account
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.DialogFragment
-import com.simple.firebase.chat.app.R
-import com.simple.firebase.chat.app.custom.BaseDialogFragment
 import android.view.ViewGroup.LayoutParams
 import android.widget.EditText
 import android.widget.TextView
+import com.simple.firebase.chat.app.R
+import com.simple.firebase.chat.app.custom.BaseDialogFragment
 import com.simple.firebase.chat.app.ui.login.LoginActivity
 import com.simple.firebase.chat.app.util.MainUtil
 

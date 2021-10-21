@@ -15,7 +15,9 @@ class MessagesActivity : AppCompatActivity() {
     private lateinit var messagesRecyclerView: RecyclerView
 
     companion object {
-        const val EXTRA_OTHER_USER_ID = "other user id"
+        const val EXTRA_OTHER_USER_ID = "other_user_id"
+        const val EXTRA_OTHER_USER_NAME = "other_user_name"
+
     }
 
 
@@ -24,12 +26,14 @@ class MessagesActivity : AppCompatActivity() {
         setContentView(R.layout.activity_messages)
 
 
+        val extras = intent.extras!!
+        supportActionBar?.title = extras.getString(EXTRA_OTHER_USER_NAME)!!
 
         messageInputText = findViewById(R.id.messageInputText)
         messagesRecyclerView = findViewById(R.id.messagesRecyclerView)
         initViewModel()
 
-        viewModel.otherUserId = intent.extras!!.getString(EXTRA_OTHER_USER_ID)!!
+        viewModel.otherUserId = extras.getString(EXTRA_OTHER_USER_ID)!!
 
         messagesRecyclerAdapter = MessagesRecyclerAdapter(viewModel)
         messagesRecyclerView.adapter = messagesRecyclerAdapter

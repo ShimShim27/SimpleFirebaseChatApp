@@ -33,7 +33,7 @@ class ConversationRecyclerAdapter(private val viewModel: MainActivityViewModel) 
         val profileImageView: ImageView = v.findViewById(R.id.profileImageView)
 
         init {
-            v.setOnClickListener { viewModel.gotoMessages(getItem(bindingAdapterPosition)!!.partnerUserId) }
+            v.setOnClickListener { viewModel.gotoMessages(getItem(bindingAdapterPosition)!!) }
         }
     }
 

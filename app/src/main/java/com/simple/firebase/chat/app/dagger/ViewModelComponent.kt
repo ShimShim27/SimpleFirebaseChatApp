@@ -1,6 +1,5 @@
 package com.simple.firebase.chat.app.dagger
 
-import com.simple.firebase.chat.app.model.Message
 import com.simple.firebase.chat.app.ui.account.AccountFragmentViewModel
 import com.simple.firebase.chat.app.ui.login.LoginActivityViewModel
 import com.simple.firebase.chat.app.ui.main.MainActivityViewModel

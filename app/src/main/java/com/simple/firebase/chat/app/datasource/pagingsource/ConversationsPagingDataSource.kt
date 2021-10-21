@@ -1,11 +1,10 @@
 package com.simple.firebase.chat.app.datasource.pagingsource
 
-import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
-import com.simple.firebase.chat.app.config.Config
+import com.simple.firebase.chat.app.constants.Config
 import com.simple.firebase.chat.app.datasource.repo.FirebaseRepo
 import com.simple.firebase.chat.app.model.Conversation
 import kotlinx.coroutines.*
