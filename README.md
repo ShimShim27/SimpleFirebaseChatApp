@@ -1,4 +1,4 @@
-# Simple Firebase Chat App <img src="https://media.giphy.com/media/3oKIPwoeGErMmaI43S/giphy.gif" width="70" height="50"/>
+# Simple Firebase Chat App <img src="https://media.giphy.com/media/3oKIPwoeGErMmaI43S/giphy.gif" width="60" height="50"/>
 A simple chat app using firebase real time capabilities. The app lets you communicate with anyone who are also using the app. 
 Please note that the app is just made for learning and is lacking many important functionalities.
 Contributors are also welcome to contribute to the project. <br/><br/>
